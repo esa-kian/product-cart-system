@@ -1,61 +1,154 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Product and Cart System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This project is a Laravel application that implements a product catalog and cart system, along with a product card component built with Vue.js and Storybook.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Product management with database migrations and seeders
+- Cart functionality with the ability to add products and calculate totals
+- Comprehensive test suite for cart operations
+- Product card component with Storybook integration
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.1+
+- Composer
+- Node.js and NPM
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Clone the repository
+   ```bash
+   git clone https://github.com/esa-kian/autovex
+   cd autovex
+   ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+2. Install PHP dependencies
+   ```bash
+   composer install
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+3. Install Node.js dependencies
+   ```bash
+   npm install
+   ```
 
-## Laravel Sponsors
+4. Create a `.env` file
+   ```bash
+   cp .env.example .env
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+5. Configure your database connection in `.env` (Optional)
 
-### Premium Partners
+6. Generate application key
+   ```bash
+   php artisan key:generate
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+7. Run migrations and seed the database
+   ```bash
+   php artisan migrate --seed
+   ```
 
-## Contributing
+## Running Tests
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan test
+```
 
-## Code of Conduct
+## Running Storybook
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+npm run storybook
+```
 
-## Security Vulnerabilities
+## Project Structure
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Part One: Database Structure
+- `database/migrations` - Contains migrations for products and cart tables
+- `app/Models` - Contains Product, Cart, and CartItem models
+- `database/seeders` - Contains seeders for products
+- `tests/Feature` - Contains test files for cart functionality
+  - Testing cart operations (adding products)
+  - Testing total price calculations with and without VAT
+
+### Part Two: Frontend Components
+- `frontend/src/components` - Contains Vue components
+  - `ProductCard.vue` - Product card component
+- `frontend/src/stories` - Contains Storybook stories
+  - `ProductCard.stories.js` - Stories for different product card states
+
+## Database Design
+
+### Products Table
+- `id` - Primary key
+- `title` - Product name
+- `sku` - Stock keeping unit (unique identifier)
+- `images` - JSON array of image paths
+- `description` - Product description text
+- `price` - Product price
+- `created_at`, `updated_at`, `deleted_at` - Timestamps with soft delete support
+
+### Carts Table
+- `id` - Primary key
+- `session_id` - Unique session identifier
+- `user_id` - Optional user ID for authenticated users
+- `created_at`, `updated_at` - Timestamps
+
+### Cart Items Table
+- `id` - Primary key
+- `cart_id` - Foreign key to carts table
+- `product_id` - Foreign key to products table
+- `quantity` - Number of items
+- `created_at`, `updated_at` - Timestamps
+
+## API Reference
+
+### Cart Methods
+
+#### Add a product to the cart
+```php
+$cart->addProduct($productId, $quantity = 1)
+```
+
+#### Get cart total (excluding VAT)
+```php
+$cart->total_price
+```
+
+#### Get cart total (including VAT)
+```php
+$cart->getTotalPriceWithVat($vatRate)
+```
+
+## Frontend Components
+
+### ProductCard
+A reusable Vue component that displays product information with the following features:
+- Product image display
+- Title and description
+- Price display (with support for sale prices)
+- Add to cart button with state tracking
+- Responsive design with hover effects
+
+## Development Guidelines
+
+1. Run tests before committing changes
+   ```bash
+   php artisan test
+   ```
+
+2. Use Storybook to develop UI components in isolation
+   ```bash
+   npm run storybook
+   ```
+
+3. Follow Laravel and Vue.js best practices
+   - Use Laravel's Eloquent ORM for database operations
+   - Keep controllers thin
+   - Follow the single responsibility principle
+   - Use Vue.js props and events for component communication
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the MIT license.
